@@ -418,7 +418,7 @@
 
   <div class="sheet-content">
   <div class="statusbar">
-    <span>15:42</span>
+    <span></span>
     <span></span>
   </div>
 
@@ -501,7 +501,7 @@
     </div>
     <div class="admin-field">
       <label>Дүн</label>
-      <input type="text" id="inAmount" placeholder="0.00 DEMO">
+      <input type="text" id="inAmount" placeholder="0.00">
     </div>
     <div class="admin-field">
       <label>Огноо/цаг</label>
@@ -509,7 +509,7 @@
     </div>
     <div class="admin-field">
       <label>Дансны үлдэгдэл</label>
-      <input type="text" id="inBalance" placeholder="0.00 DEMO">
+      <input type="text" id="inBalance" placeholder="0.00">
     </div>
     <div class="admin-field">
       <label>Хүлээн авагчийн нэр</label>
@@ -654,7 +654,7 @@
       eyeIcon.innerHTML = eyeOpenPath;
     } else {
       realBalance = dispBalance.textContent === '•••••• DEMO' ? realBalance : dispBalance.textContent;
-      dispBalance.textContent = '•••••• DEMO';
+      dispBalance.textContent = '••••••';
       eyeIcon.innerHTML = eyeClosedPath;
     }
   });
