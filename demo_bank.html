@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Demo Bank - Гүйлгээ</title>
+<meta name="theme-color" content="#3f9142">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Demo Bank">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233f9142'/%3E%3Cpath d='M25 52 L42 68 L76 30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233f9142'/%3E%3Cpath d='M25 52 L42 68 L76 30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="manifest" id="manifestLink">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --primary: #3f9142;
+    --primary-dark: #2e7d32;
+    --primary-light: #dff2e1;
+    --primary-pale: #f4f9f4;
+    --primary-border: #9fbfa3;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    min-height: 100dvh;
+    background: #eef1ef;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    height: 100dvh;
+    background: #f4f6f5;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 8px;
+  }
+  .phone.open {
+    display: flex;
+  }
+  .blur-backdrop {
+    flex-shrink: 0;
+    padding: 14px 16px 20px;
+    background: #eef1ef;
+    position: relative;
+  }
+  .blur-backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .blur-line {
+    height: 14px;
+    border-radius: 6px;
+    background: #d5dad6;
+    filter: blur(3px);
+    margin-bottom: 8px;
+  }
+  .blur-line.w60 { width: 60%; }
+  .blur-line.w40 { width: 40%; }
+  .sheet-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #f4f6f5;
+    border-radius: 20px 20px 0 0;
+    margin-top: -14px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    padding-top: 4px;
+  }
+  .statusbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 16px;
+    font-size: 12px;
+    color: #333;
+    flex-shrink: 0;
+  }
+  .header {
+    padding: 4px 16px 12px;
+    background: linear-gradient(180deg, var(--primary-light) 0%, #eef1ef 100%);
+    flex-shrink: 0;
+  }
+  .header-title {
+    font-size: 11px;
+    color: #555;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 8px 16px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .check-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+  }
+  .status-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 6px;
+  }
+  .amount {
+    font-size: 26px;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 4px;
+  }
+  .date {
+    color: #888;
+    font-size: 12px;
+  }
+  .info-card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 8px 16px;
+    padding: 10px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+  }
+  .info-label {
+    color: #888;
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+  .info-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+    line-height: 1.1;
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .eye-toggle {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-upload {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #eef1ef;
+    border: 1.5px dashed var(--primary-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .logo-upload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .logo-upload input {
+    display: none;
+  }
+  .logo-display {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .logo-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .admin-toggle-wrap {
+    text-align: center;
+    margin-top: 18px;
+  }
+  .admin-toggle {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 6px 14px;
+  }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-overlay.open {
+    display: flex;
+  }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .watermark {
+    text-align: center;
+    color: #bbb;
+    font-size: 10px;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+  .buttons {
+    display: flex;
+    gap: 10px;
+    margin: 10px 16px 0;
+    flex-shrink: 0;
+  }
+  .btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .btn-outline {
+    border: 1px solid #ccc;
+    color: #555;
+    background: #fff;
+  }
+  .btn-solid {
+    background: var(--primary);
+    color: #fff;
+  }
+  .admin-field {
+    margin-bottom: 12px;
+  }
+  .admin-field label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+  .admin-field input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .admin-apply {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+  .extra-lines {
+    margin-top: -2px;
+  }
+  .extra-line {
+    font-size: 15px;
+    color: #222;
+    margin-top: 0px;
+    line-height: 1.1;
+  }
+  .extra-line-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .extra-line-row input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .extra-line-remove {
+    background: #fdeaea;
+    color: #c0392b;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .add-line-btn {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px dashed var(--primary-border);
+    background: var(--primary-pale);
+    color: var(--primary-dark);
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .landing {
+    min-height: 100vh;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+  }
+  .landing-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+  }
+  .landing-btn {
+    width: 100%;
+    max-width: 260px;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+  }
+  .landing-btn.interface {
+    background: var(--primary);
+    color: #fff;
+  }
+  .landing-btn.admin {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--primary-border);
+  }
+</style>
+</head>
+<body>
+
+<div class="landing" id="landingScreen">
+  <div class="landing-title">Demo Bank — жишээ загвар</div>
+  <button class="landing-btn interface" id="goInterface">Интерфейс рүү орох</button>
+  <button class="landing-btn admin" id="goAdmin">Admin руу орох</button>
+</div>
+
+<div class="phone" id="phoneScreen">
+  <div class="blur-backdrop">
+    <div class="blur-line w60"></div>
+    <div class="blur-line w40"></div>
+    <div class="blur-line w80"></div>
+  </div>
+
+  <div class="sheet-content">
+  <div class="statusbar">
+    <span>15:42</span>
+    <span>DEMO BANK</span>
+  </div>
+
+  <div class="header">
+    <div class="header-title">Demo Bank — жишээ дэлгэц (загвар зорилготой)</div>
+  </div>
+
+  <div class="card">
+    <div class="check-circle" id="checkCircle">
+      <svg id="checkIconSvg" width="40" height="40" viewBox="0 0 24 24" fill="none">
+        <path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="status-text">Гүйлгээ амжилттай</div>
+    <div class="amount" id="dispAmount">0.00 DEMO</div>
+    <div class="date" id="dispDate">YYYY/MM/DD HH:MM</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-row">
+      <div>
+        <div class="info-label">Дансны үлдэгдэл</div>
+        <div class="info-value" id="dispBalance">0.00 DEMO</div>
+      </div>
+      <button class="eye-toggle" id="eyeToggle" type="button" aria-label="Үлдэгдэл харуулах/нуух">
+        <svg id="eyeIcon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="3" stroke="#222" stroke-width="1.6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-label">Хүлээн авагч</div>
+    <div class="info-row">
+      <div class="info-value" id="dispName">Жишээ Нэр</div>
+      <div class="logo-display" id="logoDisplay"></div>
+    </div>
+    <div class="extra-lines" id="extraLines"></div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-label">Гүйлгээний утга</div>
+    <div class="info-value" id="dispNote">жишээ утга</div>
+  </div>
+
+  <div class="watermark">★ ЭНЭ БОЛ ЗОХИОМОЛ "DEMO BANK" ЗАГВАР ★</div>
+
+  <div class="buttons">
+    <div class="btn btn-outline">Загвар хадгалах</div>
+    <div class="btn btn-solid">Дуусгах</div>
+  </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">⚙ Admin хэсэг (загвар засах)</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="admin-field">
+      <label>Интерфейсийн өнгө</label>
+      <input type="color" id="inColor" value="#3f9142" style="width:100%; height:40px; padding:4px; border-radius:8px; border:1px solid #ddd; cursor:pointer;">
+    </div>
+    <div class="admin-field">
+      <label>Дээд тэмдэг (icon) солих</label>
+      <div class="logo-upload" id="iconUpload" style="width:56px; height:56px; border-radius:50%;">
+        <span id="iconPlaceholder">+</span>
+        <input type="file" accept="image/*" id="iconInput">
+      </div>
+    </div>
+    <div class="admin-field">
+      <label>Лого оруулах</label>
+      <div class="logo-upload" id="logoUpload">
+        <span id="logoPlaceholder">+</span>
+        <input type="file" accept="image/*" id="logoInput">
+      </div>
+    </div>
+    <div class="admin-field">
+      <label>Дүн</label>
+      <input type="text" id="inAmount" placeholder="0.00 DEMO">
+    </div>
+    <div class="admin-field">
+      <label>Огноо/цаг</label>
+      <input type="text" id="inDate" placeholder="YYYY/MM/DD HH:MM">
+    </div>
+    <div class="admin-field">
+      <label>Дансны үлдэгдэл</label>
+      <input type="text" id="inBalance" placeholder="0.00 DEMO">
+    </div>
+    <div class="admin-field">
+      <label>Хүлээн авагчийн нэр</label>
+      <input type="text" id="inName" placeholder="Жишээ Нэр">
+    </div>
+    <div class="admin-field">
+      <label>Хүлээн авагчийн дор нэмэлт мөрүүд</label>
+      <div id="extraLineInputs"></div>
+      <button type="button" class="add-line-btn" id="addLineBtn">+ Мөр нэмэх</button>
+    </div>
+    <div class="admin-field">
+      <label>Гүйлгээний утга</label>
+      <input type="text" id="inNote" placeholder="жишээ утга">
+    </div>
+    <button class="admin-apply" id="applyBtn">Загвар дээр шинэчлэх</button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233f9142'/%3E%3Cpath d='M25 52 L42 68 L76 30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
+    const manifest = {
+      name: "Demo Bank",
+      short_name: "Demo Bank",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#eef1ef",
+      theme_color: "#3f9142",
+      icons: [
+        { src: iconSvg, sizes: "192x192", type: "image/svg+xml" },
+        { src: iconSvg, sizes: "512x512", type: "image/svg+xml" }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    document.getElementById('manifestLink').setAttribute('href', URL.createObjectURL(blob));
+  })();
+
+  const landingScreen = document.getElementById('landingScreen');
+  const phoneScreen = document.getElementById('phoneScreen');
+  const goInterface = document.getElementById('goInterface');
+  const goAdmin = document.getElementById('goAdmin');
+
+  const adminModal = document.getElementById('adminModal');
+  const modalClose = document.getElementById('modalClose');
+
+  function showInterface(openAdmin) {
+    landingScreen.style.display = 'none';
+    phoneScreen.classList.add('open');
+    if (openAdmin) adminModal.classList.add('open');
+    history.pushState({ view: 'interface' }, '');
+  }
+
+  function showLanding() {
+    phoneScreen.classList.remove('open');
+    adminModal.classList.remove('open');
+    landingScreen.style.display = 'flex';
+  }
+
+  goInterface.addEventListener('click', function() {
+    showInterface(false);
+  });
+
+  goAdmin.addEventListener('click', function() {
+    showInterface(true);
+  });
+
+  window.addEventListener('popstate', function() {
+    showLanding();
+  });
+
+  modalClose.addEventListener('click', function() {
+    adminModal.classList.remove('open');
+  });
+  adminModal.addEventListener('click', function(e) {
+    if (e.target === adminModal) adminModal.classList.remove('open');
+  });
+
+  const logoInput = document.getElementById('logoInput');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+  const logoDisplay = document.getElementById('logoDisplay');
+  const logoUpload = document.getElementById('logoUpload');
+
+  logoUpload.addEventListener('click', function(e) {
+    if (e.target !== logoInput) {
+      e.preventDefault();
+      logoInput.click();
+    }
+  });
+
+  logoInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      logoPlaceholder.style.display = 'none';
+      let img = logoDisplay.querySelector('img');
+      if (!img) {
+        img = document.createElement('img');
+        logoDisplay.appendChild(img);
+      }
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const extraLineInputs = document.getElementById('extraLineInputs');
+  const extraLines = document.getElementById('extraLines');
+  const addLineBtn = document.getElementById('addLineBtn');
+
+  function addLineInput(value) {
+    const row = document.createElement('div');
+    row.className = 'extra-line-row';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'жишээ: данс, утас гэх мэт';
+    if (value) input.value = value;
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'extra-line-remove';
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', function() { row.remove(); });
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    extraLineInputs.appendChild(row);
+  }
+
+  addLineBtn.addEventListener('click', function() { addLineInput(''); });
+
+  const eyeToggle = document.getElementById('eyeToggle');
+  const eyeIcon = document.getElementById('eyeIcon');
+  const dispBalance = document.getElementById('dispBalance');
+  let balanceVisible = true;
+  let realBalance = dispBalance.textContent;
+
+  const eyeOpenPath = '<path d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="#222" stroke-width="1.6"/>';
+  const eyeClosedPath = '<path d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="#222" stroke-width="1.6"/><line x1="3" y1="21" x2="21" y2="3" stroke="#222" stroke-width="1.6" stroke-linecap="round"/>';
+
+  eyeToggle.addEventListener('click', function() {
+    balanceVisible = !balanceVisible;
+    if (balanceVisible) {
+      dispBalance.textContent = realBalance;
+      eyeIcon.innerHTML = eyeOpenPath;
+    } else {
+      realBalance = dispBalance.textContent === '•••••• DEMO' ? realBalance : dispBalance.textContent;
+      dispBalance.textContent = '•••••• DEMO';
+      eyeIcon.innerHTML = eyeClosedPath;
+    }
+  });
+
+  const inColor = document.getElementById('inColor');
+
+  function hexToRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  }
+  function mix(hex, targetR, targetG, targetB, amount) {
+    const c = hexToRgb(hex);
+    return rgbToHex(
+      c.r + (targetR - c.r) * amount,
+      c.g + (targetG - c.g) * amount,
+      c.b + (targetB - c.b) * amount
+    );
+  }
+
+  function applyThemeColor(hex) {
+    const root = document.documentElement.style;
+    root.setProperty('--primary', hex);
+    root.setProperty('--primary-dark', mix(hex, 0, 0, 0, 0.25));
+    root.setProperty('--primary-light', mix(hex, 255, 255, 255, 0.85));
+    root.setProperty('--primary-pale', mix(hex, 255, 255, 255, 0.92));
+    root.setProperty('--primary-border', mix(hex, 255, 255, 255, 0.35));
+  }
+
+  inColor.addEventListener('input', function() {
+    applyThemeColor(inColor.value);
+  });
+
+  const iconInput = document.getElementById('iconInput');
+  const iconUpload = document.getElementById('iconUpload');
+  const iconPlaceholder = document.getElementById('iconPlaceholder');
+  const checkCircle = document.getElementById('checkCircle');
+
+  iconUpload.addEventListener('click', function(e) {
+    if (e.target !== iconInput) {
+      e.preventDefault();
+      iconInput.click();
+    }
+  });
+
+  iconInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      iconPlaceholder.style.display = 'none';
+      let img = iconUpload.querySelector('img');
+      if (!img) {
+        img = document.createElement('img');
+        iconUpload.appendChild(img);
+      }
+      img.src = ev.target.result;
+
+      checkCircle.innerHTML = '';
+      const bigImg = document.createElement('img');
+      bigImg.src = ev.target.result;
+      bigImg.style.width = '100%';
+      bigImg.style.height = '100%';
+      bigImg.style.objectFit = 'cover';
+      bigImg.style.borderRadius = '50%';
+      checkCircle.appendChild(bigImg);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const applyBtn = document.getElementById('applyBtn');
+  applyBtn.addEventListener('click', function() {
+    const amount = document.getElementById('inAmount').value;
+    const date = document.getElementById('inDate').value;
+    const balance = document.getElementById('inBalance').value;
+    const name = document.getElementById('inName').value;
+    const note = document.getElementById('inNote').value;
+
+    if (amount) document.getElementById('dispAmount').textContent = amount;
+    if (date) document.getElementById('dispDate').textContent = date;
+    if (balance) {
+      realBalance = balance;
+      dispBalance.textContent = balanceVisible ? balance : '•••••• DEMO';
+    }
+    if (name) document.getElementById('dispName').textContent = name;
+    if (note) document.getElementById('dispNote').textContent = note;
+
+    extraLines.innerHTML = '';
+    extraLineInputs.querySelectorAll('input').forEach(function(inp) {
+      if (inp.value.trim()) {
+        const line = document.createElement('div');
+        line.className = 'extra-line';
+        line.textContent = inp.value;
+        extraLines.appendChild(line);
+      }
+    });
+
+    adminModal.classList.remove('open');
+  });
+</script>
+
+</body>
+</html>
