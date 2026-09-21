@@ -45,6 +45,7 @@
     flex-direction: column;
     overflow: hidden;
     padding-bottom: 8px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
   }
   .phone.open {
     display: flex;
@@ -403,7 +404,7 @@
 <body>
 
 <div class="landing" id="landingScreen">
-  <div class="landing-title">Demo Bank — жишээ загвар</div>
+  <div class="landing-title"></div>
   <button class="landing-btn interface" id="goInterface">Интерфейс рүү орох</button>
   <button class="landing-btn admin" id="goAdmin">Admin руу орох</button>
 </div>
@@ -418,11 +419,11 @@
   <div class="sheet-content">
   <div class="statusbar">
     <span>15:42</span>
-    <span>DEMO BANK</span>
+    <span></span>
   </div>
 
   <div class="header">
-    <div class="header-title">Demo Bank — жишээ дэлгэц (загвар зорилготой)</div>
+    <div class="header-title"></div>
   </div>
 
   <div class="card">
@@ -465,7 +466,7 @@
     <div class="info-value" id="dispNote">жишээ утга</div>
   </div>
 
-  <div class="watermark">★ ЭНЭ БОЛ ЗОХИОМОЛ "DEMO BANK" ЗАГВАР ★</div>
+  <div class="watermark"></div>
 
   <div class="buttons">
     <div class="btn btn-outline">Загвар хадгалах</div>
