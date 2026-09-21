@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Demo Bank - Гүйлгээ</title>
+<title>Гүйлгээ</title>
 <meta name="theme-color" content="#3f9142">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Demo Bank">
+<meta name="apple-mobile-web-app-title" content="Гүйлгээ">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233f9142'/%3E%3Cpath d='M25 52 L42 68 L76 30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233f9142'/%3E%3Cpath d='M25 52 L42 68 L76 30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="manifest" id="manifestLink">
@@ -23,6 +23,9 @@
     --primary-light: #dff2e1;
     --primary-pale: #f4f9f4;
     --primary-border: #9fbfa3;
+    --btn-solid: #35784c;
+    /* 1080px өргөнтэй дэлгэцийн зурагтай ижил харьцаа: 1 нэгж = 1/1080 өргөн */
+    --s: calc(min(100vw, 420px) / 1080);
   }
   html, body {
     height: 100%;
@@ -40,21 +43,41 @@
     width: 100%;
     max-width: 420px;
     height: 100dvh;
-    background: #f4f6f5;
+    background: #f4f4f4;
     display: none;
     flex-direction: column;
     overflow: hidden;
-    padding-bottom: 8px;
-    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-top: 0;
   }
   .phone.open {
     display: flex;
   }
   .blur-backdrop {
     flex-shrink: 0;
-    padding: 14px 16px 20px;
-    background: #eef1ef;
+    height: calc(270 * var(--s));
+    padding: calc(110 * var(--s) + env(safe-area-inset-top, 0px) * 0) calc(46 * var(--s)) 0;
+    background: #f6f6f6;
     position: relative;
+    overflow: hidden;
+  }
+  .blur-backdrop .statusbar {
+    position: absolute;
+    top: env(safe-area-inset-top, 0px);
+    left: 0; right: 0;
+    padding: calc(28 * var(--s)) calc(60 * var(--s));
+    font-size: calc(40 * var(--s));
+    font-weight: 700;
+    z-index: 2;
+  }
+  .blur-backdrop .green-strip {
+    position: absolute;
+    left: calc(46 * var(--s)); right: calc(46 * var(--s));
+    bottom: 0;
+    height: calc(26 * var(--s));
+    border-radius: calc(20 * var(--s)) calc(20 * var(--s)) 0 0;
+    background: #b5cfc2;
+    filter: blur(4px);
   }
   .blur-backdrop::after {
     content: "";
@@ -64,25 +87,28 @@
     -webkit-backdrop-filter: blur(6px);
   }
   .blur-line {
-    height: 14px;
-    border-radius: 6px;
-    background: #d5dad6;
-    filter: blur(3px);
-    margin-bottom: 8px;
+    height: calc(46 * var(--s));
+    border-radius: calc(20 * var(--s));
+    background: #cfd3d0;
+    filter: blur(5px);
+    margin-bottom: calc(60 * var(--s));
   }
-  .blur-line.w60 { width: 60%; }
-  .blur-line.w40 { width: 40%; }
+  .blur-line.w60 { width: 65%; }
+  .blur-line.w40 { width: 34%; height: calc(30 * var(--s)); }
+  .blur-line.w80 { display: none; }
   .sheet-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #f4f6f5;
-    border-radius: 20px 20px 0 0;
-    margin-top: -14px;
+    background: #f4f4f4;
+    border-radius: calc(50 * var(--s)) calc(50 * var(--s)) 0 0;
+    margin-top: calc(-1 * 0px);
     position: relative;
     z-index: 1;
     overflow: hidden;
-    padding-top: 4px;
+    min-height: 0;
+    padding-top: calc(36 * var(--s));
+    padding-bottom: calc(60 * var(--s));
   }
   .statusbar {
     display: flex;
@@ -93,6 +119,7 @@
     flex-shrink: 0;
   }
   .header {
+    display: none;
     padding: 4px 16px 12px;
     background: linear-gradient(180deg, var(--primary-light) 0%, #eef1ef 100%);
     flex-shrink: 0;
@@ -103,28 +130,33 @@
   }
   .card {
     background: #fff;
-    border-radius: 14px;
-    margin: 8px 16px;
-    padding: 14px 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border-radius: calc(30 * var(--s));
+    margin: 0 calc(46 * var(--s)) calc(46 * var(--s));
+    padding: 16px 20px;
     text-align: center;
     flex-shrink: 0;
+    flex: 733 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .check-circle {
-    width: 56px;
-    height: 56px;
+    width: calc(200 * var(--s));
+    height: calc(200 * var(--s));
     border-radius: 50%;
     background: var(--primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 10px;
+    margin: 0 auto calc(30 * var(--s));
   }
+  .check-circle svg { width: 60%; height: 60%; }
   .status-text {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 700;
     color: #222;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
   .amount {
     font-size: 26px;
@@ -138,12 +170,17 @@
   }
   .info-card {
     background: #fff;
-    border-radius: 14px;
-    margin: 8px 16px;
-    padding: 10px 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border-radius: calc(30 * var(--s));
+    margin: 0 calc(46 * var(--s)) calc(23 * var(--s));
+    padding: 8px calc(40 * var(--s));
     flex-shrink: 0;
+    flex: 200 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
+  .info-card.tall { flex: 332 1 0; }
   .info-label {
     color: #888;
     font-size: 11px;
@@ -264,31 +301,35 @@
     text-align: center;
     color: #bbb;
     font-size: 10px;
-    margin-top: 8px;
+    margin-top: calc(50 * var(--s));
     letter-spacing: 1px;
     flex-shrink: 0;
   }
   .buttons {
     display: flex;
-    gap: 10px;
-    margin: 10px 16px 0;
+    gap: calc(47 * var(--s));
+    margin: calc(46 * var(--s)) calc(46 * var(--s)) 0;
     flex-shrink: 0;
   }
   .btn {
     flex: 1;
-    padding: 11px;
-    border-radius: 12px;
+    height: calc(138 * var(--s));
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: calc(30 * var(--s));
     text-align: center;
     font-weight: 600;
     font-size: 14px;
   }
   .btn-outline {
-    border: 1px solid #ccc;
+    border: 1.2px solid #ececec;
     color: #555;
     background: #fff;
   }
   .btn-solid {
-    background: var(--primary);
+    background: var(--btn-solid);
     color: #fff;
   }
   .admin-field {
@@ -404,7 +445,7 @@
 <body>
 
 <div class="landing" id="landingScreen">
-  <div class="landing-title"></div>
+  <div class="landing-title">Жишээ загвар</div>
   <button class="landing-btn interface" id="goInterface">Интерфейс рүү орох</button>
   <button class="landing-btn admin" id="goAdmin">Admin руу орох</button>
 </div>
@@ -413,17 +454,11 @@
   <div class="blur-backdrop">
     <div class="blur-line w60"></div>
     <div class="blur-line w40"></div>
-    <div class="blur-line w80"></div>
+    <div class="green-strip"></div>
   </div>
 
   <div class="sheet-content">
-  <div class="statusbar">
-    <span></span>
-    <span></span>
-  </div>
-
   <div class="header">
-    <div class="header-title"></div>
   </div>
 
   <div class="card">
@@ -441,7 +476,7 @@
     <div class="info-row">
       <div>
         <div class="info-label">Дансны үлдэгдэл</div>
-        <div class="info-value" id="dispBalance">0.00 </div>
+        <div class="info-value" id="dispBalance">0.00</div>
       </div>
       <button class="eye-toggle" id="eyeToggle" type="button" aria-label="Үлдэгдэл харуулах/нуух">
         <svg id="eyeIcon" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -452,7 +487,7 @@
     </div>
   </div>
 
-  <div class="info-card">
+  <div class="info-card tall">
     <div class="info-label">Хүлээн авагч</div>
     <div class="info-row">
       <div class="info-value" id="dispName">Жишээ Нэр</div>
@@ -465,8 +500,6 @@
     <div class="info-label">Гүйлгээний утга</div>
     <div class="info-value" id="dispNote">жишээ утга</div>
   </div>
-
-  <div class="watermark"></div>
 
   <div class="buttons">
     <div class="btn btn-outline">Загвар хадгалах</div>
@@ -532,8 +565,8 @@
   (function() {
     const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233f9142'/%3E%3Cpath d='M25 52 L42 68 L76 30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
     const manifest = {
-      name: "Demo Bank",
-      short_name: "Demo Bank",
+      name: "Гүйлгээ",
+      short_name: "Гүйлгээ",
       start_url: ".",
       display: "standalone",
       background_color: "#eef1ef",
@@ -653,7 +686,7 @@
       dispBalance.textContent = realBalance;
       eyeIcon.innerHTML = eyeOpenPath;
     } else {
-      realBalance = dispBalance.textContent === '•••••• DEMO' ? realBalance : dispBalance.textContent;
+      realBalance = dispBalance.textContent === '••••••' ? realBalance : dispBalance.textContent;
       dispBalance.textContent = '••••••';
       eyeIcon.innerHTML = eyeClosedPath;
     }
@@ -684,6 +717,7 @@
     root.setProperty('--primary-light', mix(hex, 255, 255, 255, 0.85));
     root.setProperty('--primary-pale', mix(hex, 255, 255, 255, 0.92));
     root.setProperty('--primary-border', mix(hex, 255, 255, 255, 0.35));
+    root.setProperty('--btn-solid', mix(hex, 0, 0, 0, 0.15));
   }
 
   inColor.addEventListener('input', function() {
@@ -739,7 +773,7 @@
     if (date) document.getElementById('dispDate').textContent = date;
     if (balance) {
       realBalance = balance;
-      dispBalance.textContent = balanceVisible ? balance : '•••••• DEMO';
+      dispBalance.textContent = balanceVisible ? balance : '••••••';
     }
     if (name) document.getElementById('dispName').textContent = name;
     if (note) document.getElementById('dispNote').textContent = note;
